@@ -292,5 +292,31 @@ public class AdminController {
 	  	
 	    return "redirect:admincategories";  
 	}
+	@RequestMapping(value = "/adminchangepwdaction", method = RequestMethod.POST)
+	public String updatePassword(ModelMap map,  @RequestParam(value="pwd", required=true) String pwd,
+			 @RequestParam(value="pwd2", required=true) String pwd2, 
+			 HttpServletRequest request)
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	
+	
+	  if (pwd == null || pwd2 == null || pwd.equals("") || pwd2.equals("")) {
+		  map.addAttribute("error", "Error , Incomplete passwords submitted.");
+		  return "admin/change-password";
+	  }
+	  if (!pwd.equals(pwd2)) {
+		  map.addAttribute("error", "Error , Passwords do not match.");
+		  return "admin/change-password";
+	  }
+	  Admin admin = adminService.getAdminById((Long) session.getAttribute("admin_id")); 
+	  admin.setAdminPwd(pwd);
+	  adminService.updatePwd(admin);
+	
+	    return "admin/dashboard";  
+	}
 
 }
