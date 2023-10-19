@@ -177,5 +177,13 @@ public class AdminController {
 	  map.addAttribute("pageTitle", "ADMIN EDIT PRODUCT");
 	    return "admin/edit-product"; 
 	}
+	@RequestMapping(value = "/adminlogout", method = RequestMethod.GET)
+	public String logout(ModelMap map, HttpServletRequest request) 
+	{
+	  	HttpSession session = request.getSession();
+	  	session.invalidate();
+	  	
+	    return "admin/login"; 
+	}
 
 }
