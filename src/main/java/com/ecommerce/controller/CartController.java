@@ -137,4 +137,29 @@ public class CartController {
 		        return page; 
 		    }
 
+	@RequestMapping(value = "/cartdeleteitem", method = RequestMethod.GET)
+	public String cartDeleteItem(ModelMap map, HttpServletRequest request, 
+			@RequestParam(value="id", required=true) String id) 
+	{
+	  // check if user is logged in
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("user_id") == null) {
+		  map.addAttribute("error", "Error, You need to login before deleting items from cart");
+	  } else {
+		  long idValue = Long.parseLong(id);
+		  List<CartItem> cartItems = new ArrayList<CartItem>();
+		  if (session.getAttribute("cart_items") != null)
+			  cartItems = (List<CartItem>) session.getAttribute("cart_items");
+		  	  
+		  for(CartItem item: cartItems) {
+			  if (item.getProductId() == idValue) {
+				  cartItems.remove(item);
+				  session.setAttribute("cart_items", cartItems);
+				  break;
+			  }
+		   }
+	  }	
+	    return "redirect:cart"; 
+	}
+
 }
