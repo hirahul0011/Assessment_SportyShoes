@@ -95,4 +95,20 @@ public class MemberController {
 	    return "login"; 
 	}
 
+	@RequestMapping(value = "/loginaction", method = RequestMethod.POST)
+	public String loginAction(ModelMap map,  HttpServletRequest request,
+			@RequestParam(value="email_id", required=true) String emailId,
+			 @RequestParam(value="pwd", required=true) String pwd) 
+	{
+	  User user = userService.authenticate(emailId, pwd);
+	  if (user == null) { 
+		  map.addAttribute("error", "Login failed");
+		  return "login";
+	  }
+	  HttpSession session = request.getSession();
+	  session.setAttribute("user_id", user.getID());
+	
+	  return "redirect:dashboard"; 
+	}
+
 }
