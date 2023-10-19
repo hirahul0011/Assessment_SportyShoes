@@ -133,5 +133,25 @@ public class AdminController {
 	  }
 	  return "redirect:adminproducts";
 	}
+	@RequestMapping(value = "/admineditcat",  method = RequestMethod.GET)
+	public String editCategory(ModelMap map,  @RequestParam(value="id", required=true) String id,
+			HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	  long idValue = Long.parseLong(id);
+	  Category category = new Category();
+	  if (idValue > 0) {
+		  category = categoryService.getCategoryById(idValue);
+	  } else {
+		  category.setID(0);
+	  }
+	  map.addAttribute("category", category);
+	  map.addAttribute("pageTitle", "ADMIN EDIT PRODUCT CATEGORY");
+	    return "admin/edit-category"; 
+	}
 
 }
