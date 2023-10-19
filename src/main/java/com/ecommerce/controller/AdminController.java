@@ -318,5 +318,38 @@ public class AdminController {
 	
 	    return "admin/dashboard";  
 	}
+	@RequestMapping(value = "/admineditproductaction", method = RequestMethod.POST)
+	public String updateProduct(ModelMap map, HttpServletRequest request,
+			 @RequestParam(value="id", required=true) String id,
+			 @RequestParam(value="name", required=true) String name,
+			 @RequestParam(value="price", required=true) String price,
+			 @RequestParam(value="category", required=true) String categoryId) 
+	{
+	  long idValue = Long.parseLong(id); 
+	  long categoryIdValue = Long.parseLong(categoryId);
+	  BigDecimal priceValue = new BigDecimal(0.0);
+	
+	  if (name == null || name.equals("") ) { 
+		  map.addAttribute("error", "Error, A product name must be specified");
+		  return "redirect:admineditproduct?id="+id;
+	  }
+	  try {
+		  priceValue = new BigDecimal(price);
+		  
+	  } catch (Exception ex) {
+		  map.addAttribute("error", "Error, Price is invalid");
+		  return "redirect:admineditproduct?id="+id;
+	  }
+	
+	  	Product product = new Product();
+	  	product.setID(idValue); 
+	  	product.setCategoryId(Long.parseLong(categoryId));
+	  	product.setName(name);
+	  	product.setPrice(priceValue);
+	  	
+	  	productService.updateProduct(product); 
+	  	
+	    return "redirect:adminproducts"; 
+	}
 
 }
