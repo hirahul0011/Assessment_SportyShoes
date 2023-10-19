@@ -88,4 +88,11 @@ public class MemberController {
 	    return "redirect:dashboard"; 
 	}
 
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String login(ModelMap map) 
+	{
+	  map.addAttribute("pageTitle", "SPORTY SHOES - MEMBER LOGIN");
+	    return "login"; 
+	}
+
 }
