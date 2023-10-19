@@ -73,5 +73,20 @@ public class AdminController {
 	  map.addAttribute("pageTitle", "ADMIN SETUP PRODUCT CATEGORIES");
 	    return "admin/categories"; 
 	}
+	@RequestMapping(value = "/adminchangepassword", method = RequestMethod.GET)
+	public String changePwd(ModelMap map, HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	
+	  Admin admin = adminService.getAdminById((Long) session.getAttribute("admin_id"));
+	
+	  map.addAttribute("admin", admin);
+	  map.addAttribute("pageTitle", "ADMIN CHANGE PASSWORD");
+	    return "admin/change-password"; 
+	}
 
 }
