@@ -1,5 +1,6 @@
 package com.ecommerce.controller;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ecommerce.entity.Admin;
 import com.ecommerce.entity.Category;
 import com.ecommerce.entity.Product;
+import com.ecommerce.entity.Purchase;
+import com.ecommerce.entity.PurchaseItem;
 import com.ecommerce.entity.User;
 import com.ecommerce.service.AdminService;
 import com.ecommerce.service.CategoryService;
@@ -224,6 +227,51 @@ public class AdminController {
 	
 	  map.addAttribute("pageTitle", "ADMIN SETUP PRODUCTS");
 	    return "admin/products"; 
+	}
+	@RequestMapping(value = "/adminpurchases", method = RequestMethod.GET)
+	public String purchases(ModelMap map, HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	
+	  List<Purchase> list = purchaseService.getAllItems();
+	
+	  BigDecimal total = new BigDecimal(0.0);
+	
+	  for(Purchase purchase: list) {
+		  total = total.add(purchase.getTotal());
+	  }
+	
+	  // use MAPs to mape users to each purchase and item names to each purchase item row
+	  HashMap<Long, String> mapItems = new HashMap<Long, String>();
+	  HashMap<Long, String> mapUsers = new HashMap<Long, String>();
+	
+	  for(Purchase purchase: list) {
+		  total = total.add(purchase.getTotal());
+		  User user = userService.getUserById(purchase.getUserId());
+		  if (user != null)
+			  mapUsers.put(purchase.getID(), user.getFname() + " " + user.getLname());
+		  
+		  List<PurchaseItem> itemList = purchaseItemService.getAllItemsByPurchaseId(purchase.getID());
+		  StringBuilder sb = new StringBuilder(""); 
+		  for(PurchaseItem item: itemList) {
+			  Product product = productService.getProductById(item.getProductId());
+			  if (product != null)
+				  sb.append(product.getName() + ", " + 
+					  	item.getQty() + " units @" + item.getRate() + " = " 
+					  	+ item.getPrice() + "<br>");
+		  }
+		  mapItems.put(purchase.getID(), sb.toString());
+	  }		  
+	  map.addAttribute("totalAmount", total); 
+	  map.addAttribute("list", list);
+	  map.addAttribute("mapItems", mapItems);
+	  map.addAttribute("mapUsers", mapUsers);
+	  map.addAttribute("pageTitle", "ADMIN PURCHASES REPORT");
+	    return "admin/purchases"; 
 	}
 
 }
