@@ -111,4 +111,19 @@ public class MemberController {
 	  return "redirect:dashboard"; 
 	}
 
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(ModelMap map, HttpServletRequest request) 
+	{
+	  	HttpSession session = request.getSession();
+	  	session.invalidate();
+	  	
+	    return "redirect:home"; 
+	}
+
+	@RequestMapping(value = "/registerconfirm", method = RequestMethod.GET)
+	public String registerConfirm(ModelMap map) 
+	{
+	    return "register-confirm"; 
+	}
+
 }
