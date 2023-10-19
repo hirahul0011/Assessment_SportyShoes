@@ -1,5 +1,7 @@
 package com.ecommerce.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ecommerce.entity.Admin;
+import com.ecommerce.entity.Category;
 import com.ecommerce.service.AdminService;
 import com.ecommerce.service.CategoryService;
 import com.ecommerce.service.ProductService;
@@ -55,6 +58,20 @@ public class AdminController {
 	  session.setAttribute("admin_id", admin.getID());
 	
 	    return "admin/dashboard"; 
+	}
+	@RequestMapping(value = "/admincategories", method = RequestMethod.GET)
+	public String categories(ModelMap map, HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  } 
+	
+	  List<Category> list = categoryService.getAllCategories();
+	  map.addAttribute("list", list);
+	  map.addAttribute("pageTitle", "ADMIN SETUP PRODUCT CATEGORIES");
+	    return "admin/categories"; 
 	}
 
 }
