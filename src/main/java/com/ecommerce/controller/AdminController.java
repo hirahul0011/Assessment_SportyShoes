@@ -88,5 +88,17 @@ public class AdminController {
 	  map.addAttribute("pageTitle", "ADMIN CHANGE PASSWORD");
 	    return "admin/change-password"; 
 	}
+	@RequestMapping(value = "/admindashboard", method = RequestMethod.GET)
+	public String dashboard(ModelMap map, HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	
+	  map.addAttribute("pageTitle", "ADMIN DASHBOARD");
+	    return "admin/dashboard"; 
+	}
 
 }
