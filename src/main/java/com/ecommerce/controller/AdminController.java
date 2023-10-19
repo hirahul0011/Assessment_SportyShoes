@@ -153,5 +153,29 @@ public class AdminController {
 	  map.addAttribute("pageTitle", "ADMIN EDIT PRODUCT CATEGORY");
 	    return "admin/edit-category"; 
 	}
+	@RequestMapping(value = "/admineditproduct",  method = RequestMethod.GET)
+	public String editProduct(ModelMap map,  @RequestParam(value="id", required=true) String id,
+			HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	
+	  long idValue = Long.parseLong(id);
+	  Product product = new Product();
+	  if (idValue > 0) {
+		  product = productService.getProductById(idValue);
+	  } else {
+		  product.setID(0);
+		  product.setCategoryId(0);
+	  }
+	  String dropDown = categoryService.getCategoriesDropDown(product.getCategoryId());
+	  map.addAttribute("product", product);
+	  map.addAttribute("catDropdown", dropDown);
+	  map.addAttribute("pageTitle", "ADMIN EDIT PRODUCT");
+	    return "admin/edit-product"; 
+	}
 
 }
