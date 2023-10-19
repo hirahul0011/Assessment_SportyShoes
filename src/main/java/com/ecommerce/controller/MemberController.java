@@ -126,4 +126,11 @@ public class MemberController {
 	    return "register-confirm"; 
 	}
 
+	@RequestMapping(value = "/signup", method = RequestMethod.GET)
+	public String signup(ModelMap map) 
+	{
+	  map.addAttribute("pageTitle", "SPORTY SHOES - MEMBER REGISTRATION");
+	    return "register"; 
+	}
+
 }
