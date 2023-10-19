@@ -2,6 +2,7 @@ package com.ecommerce.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ecommerce.entity.CartItem;
 import com.ecommerce.entity.Product;
+import com.ecommerce.entity.Purchase;
+import com.ecommerce.entity.PurchaseItem;
 import com.ecommerce.service.ProductService;
 import com.ecommerce.service.PurchaseItemService;
 import com.ecommerce.service.PurchaseService;
@@ -179,6 +182,70 @@ public class CartController {
 	  }
 	  map.addAttribute("pageTitle", "SPORTY SHOES - CHECKOUT");
 	    return "checkout"; 
+	}
+
+	@RequestMapping(value = "/completepurchase", method = RequestMethod.GET)
+	public String completePurchase(ModelMap map, HttpServletRequest request) 
+	{
+	  // check if user is logged in
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("user_id") == null) {
+		  map.addAttribute("error", "Error, You need to login before completing purchase");
+	  } else {
+		  // take items from cart and update the databae 
+		  List<CartItem> cartItems = new ArrayList<CartItem>();
+		  if (session.getAttribute("cart_items") != null)
+			  cartItems = (List<CartItem>) session.getAttribute("cart_items");
+		  BigDecimal totalValue = getCartValue(cartItems);
+		  
+		  long userId = (Long) session.getAttribute("user_id") ;
+		  
+		  Purchase purchase = new Purchase();
+		  purchase.setUserId(userId);
+		  purchase.setDate(Calendar.getInstance().getTime());
+		  purchase.setTotal(totalValue);
+		  long purchaseId = purchaseService.updatePurchase(purchase);
+		  
+		  for(CartItem item: cartItems) {
+			  PurchaseItem pItem = new PurchaseItem();
+			  pItem.setPurchaseId(purchaseId);
+			  pItem.setProductId(item.getProductId());
+			  pItem.setUserId(userId);
+			  pItem.setRate(item.getRate());
+			  pItem.setQty(item.getQty());
+			  pItem.setPrice(item.getPrice());
+			  
+			  purchaseItemService.updateItem(pItem);
+		  }
+		  map.addAttribute("cartValue", totalValue);
+		  map.addAttribute("cartItems", cartItems);
+	
+	  }
+	
+	    return "redirect:confirm";  
+	}
+
+	@RequestMapping(value = "/confirm", method = RequestMethod.GET)
+	public String confirm(ModelMap map, HttpServletRequest request) 
+	{
+	  // check if user is logged in
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("user_id") == null) {
+		  map.addAttribute("error", "Error, You need to login before completing the purchase");
+	  } else {
+		  // clear items from cart as order has completed 
+		  List<CartItem> cartItems = new ArrayList<CartItem>();
+		  if (session.getAttribute("cart_items") != null)
+			  cartItems = (List<CartItem>) session.getAttribute("cart_items");
+		  BigDecimal totalValue = getCartValue(cartItems);
+		  map.addAttribute("cartValue", totalValue);
+	
+		  
+		  cartItems.clear();
+		  session.setAttribute("cart_items", null);
+	  }
+	  map.addAttribute("pageTitle", "SPORTY SHOES - PURCHASE CONFIRMATION");
+	    return "confirm"; 
 	}
 
 }
