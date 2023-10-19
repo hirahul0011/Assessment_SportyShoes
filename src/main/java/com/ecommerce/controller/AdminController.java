@@ -1,5 +1,6 @@
 package com.ecommerce.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,6 +200,30 @@ public class AdminController {
 	  map.addAttribute("list", list);
 	  map.addAttribute("pageTitle", "ADMIN BROWSE MEMBERS");
 	    return "admin/members"; 
+	}
+	@RequestMapping(value = "/adminproducts", method = RequestMethod.GET)
+	public String products(ModelMap map, HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	  List<Product> list = productService.getAllProducts();
+	
+	  // use a MAP to link category names to each product in list  
+	  HashMap<Long, String> mapCats = new HashMap<Long, String>();
+	
+	  for(Product product: list) {
+		  Category category = categoryService.getCategoryById(product.getCategoryId());
+		  if (category != null)
+			  mapCats.put(product.getID(), category.getName());
+	  }
+	  map.addAttribute("list", list);
+	  map.addAttribute("mapCats", mapCats);
+	
+	  map.addAttribute("pageTitle", "ADMIN SETUP PRODUCTS");
+	    return "admin/products"; 
 	}
 
 }
