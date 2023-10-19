@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.ecommerce.entity.Admin;
 import com.ecommerce.entity.Category;
+import com.ecommerce.entity.Product;
 import com.ecommerce.service.AdminService;
 import com.ecommerce.service.CategoryService;
 import com.ecommerce.service.ProductService;
@@ -99,6 +100,38 @@ public class AdminController {
 	
 	  map.addAttribute("pageTitle", "ADMIN DASHBOARD");
 	    return "admin/dashboard"; 
+	}
+	@RequestMapping(value = "/admindeletecat",  method = RequestMethod.GET)
+	public String deleteCategory(ModelMap map,  @RequestParam(value="id", required=true) String id,
+			HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	  long idValue = Long.parseLong(id);
+	  Category category = new Category();
+	  if (idValue > 0) {
+		  categoryService.deleteCategory(idValue);
+	  }
+	  return "redirect:admincategories";
+	}
+	@RequestMapping(value = "/admindeleteproduct",  method = RequestMethod.GET)
+	public String deleteProduct(ModelMap map,  @RequestParam(value="id", required=true) String id,
+			HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	  long idValue = Long.parseLong(id);
+	  Product product = new Product();
+	  if (idValue > 0) {
+		  productService.deleteProduct(idValue);
+	  }
+	  return "redirect:adminproducts";
 	}
 
 }
