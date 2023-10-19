@@ -273,5 +273,24 @@ public class AdminController {
 	  map.addAttribute("pageTitle", "ADMIN PURCHASES REPORT");
 	    return "admin/purchases"; 
 	}
+	@RequestMapping(value = "/admineditcataction", method = RequestMethod.POST)
+	public String updateCategory(ModelMap map,  @RequestParam(value="id", required=true) String id,
+			 @RequestParam(value="name", required=true) String name, 
+			 HttpServletRequest request)
+	{
+	  long idValue = Long.parseLong(id); 
+	
+	  if (name == null || name.equals("") ) { 
+		  map.addAttribute("error", "Error, A category name must be specified");
+		  return "redirect:admineditcat?id="+id;
+	  }
+	  	Category category = new Category();
+	  	category.setID(idValue); 
+	  	category.setName(name);
+	  	
+	  	categoryService.updateCategory(category); 
+	  	
+	    return "redirect:admincategories";  
+	}
 
 }
