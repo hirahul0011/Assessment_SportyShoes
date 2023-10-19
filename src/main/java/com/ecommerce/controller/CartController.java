@@ -248,4 +248,25 @@ public class CartController {
 	    return "confirm"; 
 	}
 
+	@RequestMapping(value = "/gateway", method = RequestMethod.GET)
+	public String gateway(ModelMap map, HttpServletRequest request) 
+	{
+	  // check if user is logged in
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("user_id") == null) {
+		  map.addAttribute("error", "Error, You need to login before making payment");
+	  } else {
+		  List<CartItem> cartItems = new ArrayList<CartItem>();
+		  if (session.getAttribute("cart_items") != null)
+			  cartItems = (List<CartItem>) session.getAttribute("cart_items");
+		  BigDecimal totalValue = getCartValue(cartItems);
+		  map.addAttribute("cartValue", totalValue);
+		  map.addAttribute("cartItems", cartItems);
+	
+	  }
+	
+	  map.addAttribute("pageTitle", "SPORTY SHOES - PAYMENT GATEWAY");
+	    return "gateway"; 
+	}
+
 }
