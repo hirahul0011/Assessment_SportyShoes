@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.ecommerce.entity.Admin;
 import com.ecommerce.entity.Category;
 import com.ecommerce.entity.Product;
+import com.ecommerce.entity.User;
 import com.ecommerce.service.AdminService;
 import com.ecommerce.service.CategoryService;
 import com.ecommerce.service.ProductService;
@@ -184,6 +185,20 @@ public class AdminController {
 	  	session.invalidate();
 	  	
 	    return "admin/login"; 
+	}
+	@RequestMapping(value = "/adminmembers", method = RequestMethod.GET)
+	public String members(ModelMap map, HttpServletRequest request) 
+	{
+	  // check if session is still alive
+	  HttpSession session = request.getSession();
+	  if (session.getAttribute("admin_id") == null) {
+		  return "admin/login";
+	  }
+	  List<User> list = userService.getAllUsers();
+	
+	  map.addAttribute("list", list);
+	  map.addAttribute("pageTitle", "ADMIN BROWSE MEMBERS");
+	    return "admin/members"; 
 	}
 
 }
