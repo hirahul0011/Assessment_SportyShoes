@@ -133,4 +133,64 @@ public class MemberController {
 	    return "register"; 
 	}
 
+	@RequestMapping(value = "/signupaction", method = RequestMethod.POST)
+	public String signupAction(ModelMap map,  HttpServletRequest request,
+			@RequestParam(value="email_id", required=true) String emailId,
+			 @RequestParam(value="pwd", required=true) String pwd,
+			 @RequestParam(value="pwd2", required=true) String pwd2,
+			 @RequestParam(value="fname", required=true) String fname,
+			 @RequestParam(value="lname", required=true) String lname,
+			 @RequestParam(value="age", required=true) String age,
+			 @RequestParam(value="address", required=true) String address) 
+	{
+	
+	  if (emailId == null || emailId.equals("")) {
+		  map.addAttribute("error", "Email id is required.");
+		  return "register";
+	  }
+	
+	  if (pwd == null || pwd2 == null || pwd.equals("") || pwd2.equals("")) {
+		  map.addAttribute("error", "Error , Incomplete passwords submitted.");
+		  return "register";
+	  }
+	
+	  if (!pwd.equals(pwd2)) {
+		  map.addAttribute("error", "Error , Passwords do not match.");
+		  return "register";
+	  }
+	
+	  if (fname == null || fname.equals("")) {
+		  map.addAttribute("error", "First name is required.");
+		  return "register";
+	  }
+	
+	  if (lname == null || lname.equals("")) {
+		  map.addAttribute("error", "Last name is required.");
+		  return "register";
+	  }
+	  if (age == null || age.equals("")) {
+		  age = "0";
+	  }
+	
+	
+	  User user = userService.getUserByEmailId(emailId);
+	  if (user != null) { 
+		  map.addAttribute("error", "This email id already exists.");
+		  return "register";
+	  }
+	  user = new User();
+	  user.setID(0);
+	  user.setEmail(emailId);
+	  user.setFname(fname);
+	  user.setLname(lname);
+	  user.setAge(Integer.parseInt(age));
+	  user.setAddress(address);
+	  user.setPwd(pwd);
+	
+	  userService.updateUser(user);
+	
+	
+	    return "redirect:registerconfirm"; 
+	}
+
 }
